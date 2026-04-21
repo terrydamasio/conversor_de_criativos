@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 336px; height: 280px;
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a0533 0%, #3d0b8c 50%, #0a1a3d 100%);
+    }
+    .container {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative;
+    }
+    .glow {
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124,58,237,.5) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.7} 50%{transform:translate(-50%,-50%) scale(1.2);opacity:1} }
+    .logo { font-size: 28px; font-weight: 900; letter-spacing: -1px; color: #fff; z-index: 1; }
+    .logo span { color: #a78bfa; }
+    .tagline { font-size: 13px; color: #c4b5fd; margin-top: 6px; z-index: 1; text-align: center; }
+    .cta {
+      margin-top: 20px; z-index: 1;
+      background: #7c3aed; color: #fff;
+      border: none; border-radius: 8px;
+      padding: 10px 24px; font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: .3px;
+      box-shadow: 0 4px 20px rgba(124,58,237,.6);
+    }
+    .badge {
+      position: absolute; top: 12px; right: 12px;
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+      color: #fff; font-size: 10px; font-weight: 600;
+      padding: 3px 8px; border-radius: 20px; z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="glow"></div>
+    <div class="badge">Exemplo Criativo</div>
+    <div class="logo">Ads<span>Up</span></div>
+    <p class="tagline">Transforme seus criativos<br>em imagens profissionais</p>
+    <button class="cta">Saiba mais →</button>
+  </div>
+</body>
+</html>
