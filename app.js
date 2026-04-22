@@ -77,7 +77,10 @@ const state = {
   files: [],
   selected: null,
   scale: 2,
-  results: []
+  results: [],
+  format: 'png',
+  gifFps: 10,
+  gifDuration: 2000
 };
 
 // ============================================================
@@ -112,7 +115,12 @@ const dom = {
   resultsGrid:     $('resultsGrid'),
   closeResultsBtn: $('closeResultsBtn'),
   closeResultsBtn2:$('closeResultsBtn2'),
-  downloadAllBtn:  $('downloadAllBtn'),
+  downloadAllBtn:    $('downloadAllBtn'),
+  convertBtnLabel:   $('convertBtnLabel'),
+  formatGroup:       $('formatGroup'),
+  gifSettings:       $('gifSettings'),
+  gifFpsSelect:      $('gifFpsSelect'),
+  gifDurationSelect: $('gifDurationSelect'),
 };
 
 // ============================================================
@@ -123,6 +131,7 @@ function init() {
   setupUpload();
   setupSettings();
 
+  setupFormatToggle();
   dom.clearFilesBtn.addEventListener('click', clearFiles);
   dom.convertBtn.addEventListener('click', startConversion);
   dom.closeResultsBtn.addEventListener('click', closeResults);
@@ -250,9 +259,32 @@ function clearFiles() {
 function updateConvertButton() {
   const has = state.files.length > 0;
   dom.convertBtn.disabled = !has;
+  const fmt = state.format === 'gif' ? 'GIF Animado' : 'PNG';
+  if (dom.convertBtnLabel) dom.convertBtnLabel.textContent = `Converter para ${fmt}`;
   dom.convertHint.textContent = has
     ? `${state.files.length} arquivo(s) — clique para converter`
     : 'Faça upload de pelo menos um arquivo HTML';
+}
+
+// ============================================================
+// FORMAT TOGGLE (PNG / GIF)
+// ============================================================
+function setupFormatToggle() {
+  document.querySelectorAll('#formatGroup .btn-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#formatGroup .btn-option').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.format = btn.dataset.format;
+      if (dom.gifSettings) dom.gifSettings.style.display = state.format === 'gif' ? 'block' : 'none';
+      updateConvertButton();
+    });
+  });
+  if (dom.gifFpsSelect) dom.gifFpsSelect.addEventListener('change', () => {
+    state.gifFps = parseInt(dom.gifFpsSelect.value, 10);
+  });
+  if (dom.gifDurationSelect) dom.gifDurationSelect.addEventListener('change', () => {
+    state.gifDuration = parseInt(dom.gifDurationSelect.value, 10);
+  });
 }
 
 // ============================================================
@@ -335,7 +367,10 @@ async function startConversion() {
   const { width, height } = getSize();
   const scale  = state.scale;
   const waitMs = parseInt(dom.waitSelect.value, 10);
+  const isGif  = state.format === 'gif';
 
+  // Revoke any previous GIF blob URLs before overwriting results
+  state.results.forEach(r => { if (r.type === 'gif' && r.blobURL) URL.revokeObjectURL(r.blobURL); });
   state.results = [];
   showProgress();
 
@@ -343,22 +378,47 @@ async function startConversion() {
     const file = state.files[i];
     const pct  = Math.round((i / state.files.length) * 100);
     updateProgress(
-      `Convertendo ${i + 1} de ${state.files.length}`,
+      `Convertendo ${i + 1} de ${state.files.length}${isGif ? ' para GIF' : ''}`,
       file.name,
       pct,
       `${i + 1} / ${state.files.length}`
     );
 
     try {
-      const html   = await readAsText(file);
-      const dataURL = await renderHTML(html, width, height, scale, waitMs);
-      state.results.push({
-        filename: file.name.replace(/\.html?$/i, '') + `_${width}x${height}@${scale}x.png`,
-        dataURL
-      });
+      const html = await readAsText(file);
+
+      if (isGif) {
+        const gifBlob = await htmlToGIF(html, width, height, {
+          fps: state.gifFps,
+          duration: state.gifDuration,
+          scale,
+          onProgress(frame, total) {
+            const overall = Math.round(((i + frame / total) / state.files.length) * 100);
+            updateProgress(
+              `Frame ${frame + 1} de ${total} — ${file.name}`,
+              `GIF: ${state.gifFps}fps · ${state.gifDuration / 1000}s`,
+              overall,
+              `Arquivo ${i + 1} / ${state.files.length}`
+            );
+          }
+        });
+        state.results.push({
+          filename: file.name.replace(/\.html?$/i, '') + `_${width}x${height}_${state.gifFps}fps.gif`,
+          blobURL: URL.createObjectURL(gifBlob),
+          type: 'gif',
+          sizeBytes: gifBlob.size
+        });
+      } else {
+        const dataURL = await renderHTML(html, width, height, scale, waitMs);
+        state.results.push({
+          filename: file.name.replace(/\.html?$/i, '') + `_${width}x${height}@${scale}x.png`,
+          dataURL,
+          type: 'png'
+        });
+      }
     } catch (err) {
       state.results.push({
-        filename: file.name.replace(/\.html?$/i, '') + `_${width}x${height}.png`,
+        filename: file.name.replace(/\.html?$/i, '') + (isGif ? '.gif' : '.png'),
         error: err.message || 'Erro desconhecido'
       });
     }
@@ -456,11 +516,21 @@ function downloadPNG(dataURL, filename) {
   a.click();
 }
 
+function downloadBlob(blobURL, filename) {
+  const a = Object.assign(document.createElement('a'), { href: blobURL, download: filename });
+  a.click();
+}
+
 async function downloadAll() {
   const ok = state.results.filter(r => !r.error);
   if (!ok.length) return;
 
-  if (ok.length === 1) { downloadPNG(ok[0].dataURL, ok[0].filename); return; }
+  if (ok.length === 1) {
+    const r = ok[0];
+    if (r.type === 'gif') downloadBlob(r.blobURL, r.filename);
+    else downloadPNG(r.dataURL, r.filename);
+    return;
+  }
 
   if (typeof JSZip === 'undefined') {
     alert('JSZip não carregou. Baixe os arquivos individualmente.');
@@ -468,7 +538,14 @@ async function downloadAll() {
   }
 
   const zip = new JSZip();
-  ok.forEach(r => zip.file(r.filename, r.dataURL.split(',')[1], { base64: true }));
+  await Promise.all(ok.map(async r => {
+    if (r.type === 'gif') {
+      const buf = await fetch(r.blobURL).then(res => res.arrayBuffer());
+      zip.file(r.filename, buf);
+    } else {
+      zip.file(r.filename, r.dataURL.split(',')[1], { base64: true });
+    }
+  }));
 
   const blob = await zip.generateAsync({ type: 'blob' });
   const url  = URL.createObjectURL(blob);
@@ -513,10 +590,18 @@ function showResults() {
           <span class="result-filename">${esc(r.filename)}</span>
           <span class="result-error-msg">${esc(r.error)}</span>
         </div>`;
+    } else if (r.type === 'gif') {
+      const sizeKB = Math.round(r.sizeBytes / 1024);
+      item.innerHTML = `
+        <div class="result-thumb"><img src="${r.blobURL}" alt="${esc(r.filename)}"></div>
+        <div class="result-info">
+          <span class="result-filename">${esc(r.filename)}</span>
+          <span class="result-size-info">~${sizeKB} KB · GIF animado</span>
+          <button class="btn-download">⬇ Baixar GIF</button>
+        </div>`;
+      item.querySelector('.btn-download').addEventListener('click', () => downloadBlob(r.blobURL, r.filename));
     } else {
-      // Estimate size from base64
       const bytes = Math.round((r.dataURL.length * 3) / 4 / 1024);
-
       item.innerHTML = `
         <div class="result-thumb"><img src="${r.dataURL}" alt="${esc(r.filename)}"></div>
         <div class="result-info">

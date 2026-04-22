@@ -1220,10 +1220,10 @@ textarea.input {
   margin-left: 4px;
 }
 
-/* ── Export row: dois botões lado a lado ── */
+/* ── Export row: 2 ou 3 botões lado a lado ── */
 .export-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: 8px;
 }
 
@@ -1244,6 +1244,23 @@ textarea.input {
 .btn-export-html:hover:not(:disabled) {
   background: var(--card-hover);
   border-color: var(--border-light);
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
+.btn-export-gif {
+  font-size: 13px;
+  padding: 11px 10px;
+  background: var(--card);
+  border: 1px solid #7c3aed55;
+  color: #a78bfa;
+  box-shadow: none;
+}
+
+.btn-export-gif:hover:not(:disabled) {
+  background: #1e1b4b55;
+  border-color: var(--primary);
+  color: #c4b5fd;
   transform: translateY(-1px);
   box-shadow: none;
 }

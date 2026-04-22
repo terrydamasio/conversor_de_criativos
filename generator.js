@@ -33,7 +33,7 @@ function genInit() {
     'genSizeSelect','genCustomSizeField','genCustomWidth','genCustomHeight',
     'genPreviewIframe','genPreviewWrapper','genPreviewEmpty','genPreviewArea','genPreviewMeta',
     'genApiKey','genCopyContext','genBtnCopy','genCreativeBrief','genBtnCreative',
-    'genAiMessage','genCopyResults','genExportPNG','genExportHTML','genScaleGroup',
+    'genAiMessage','genCopyResults','genExportPNG','genExportHTML','genExportGIF','genScaleGroup',
     'genAiHTMLPanel','genAiHTMLCode','genBtnApplyHTML','genBtnEditHTML'
   ];
   ids.forEach(function(id) { gd[id] = document.getElementById(id); });
@@ -443,6 +443,7 @@ function editAiHTML() {
 function bindExport() {
   if (gd.genExportPNG)  gd.genExportPNG.addEventListener('click', exportAsPNG);
   if (gd.genExportHTML) gd.genExportHTML.addEventListener('click', exportAsHTML);
+  if (gd.genExportGIF)  gd.genExportGIF.addEventListener('click', exportAsGIF);
 }
 
 function getExportHTML() {
@@ -499,6 +500,54 @@ async function exportAsPNG() {
   } catch (e) {
     if (overlay) overlay.style.display = 'none';
     showAiMsg('Erro ao exportar: ' + e.message, 'error');
+  }
+}
+
+async function exportAsGIF() {
+  var result = getExportHTML();
+  if (!result) return;
+  var params = result.params;
+  var html   = result.html;
+
+  var overlay  = document.getElementById('progressOverlay');
+  var pTitle   = document.getElementById('progressTitle');
+  var pDetail  = document.getElementById('progressDetail');
+  var pFill    = document.getElementById('progressFill');
+  var pCounter = document.getElementById('progressCounter');
+
+  if (overlay) overlay.style.display = 'flex';
+  if (pTitle)  pTitle.textContent  = 'Gerando GIF animado...';
+  if (pDetail) pDetail.textContent = 'Carregando encoder e capturando frames...';
+  if (pFill)   pFill.style.width   = '5%';
+  if (pCounter) pCounter.textContent = '';
+
+  var fps = 10, duration = 3000;
+
+  try {
+    var gifBlob = await htmlToGIF(html, params.width, params.height, {
+      fps: fps,
+      duration: duration,
+      scale: genState.exportScale,
+      onProgress: function(frame, total) {
+        var pct = Math.round((frame / total) * 100);
+        if (pFill)   pFill.style.width    = pct + '%';
+        if (pDetail) pDetail.textContent  = params.width + '×' + params.height + 'px — ' + fps + 'fps · ' + (duration / 1000) + 's';
+        if (pCounter) pCounter.textContent = 'Frame ' + (frame + 1) + ' / ' + total;
+      }
+    });
+
+    if (pFill) pFill.style.width = '100%';
+    await new Promise(function(r) { setTimeout(r, 300); });
+    if (overlay) overlay.style.display = 'none';
+
+    var name = 'criativo_' + params.width + 'x' + params.height + '_' + fps + 'fps.gif';
+    var url  = URL.createObjectURL(gifBlob);
+    var a    = document.createElement('a');
+    a.href = url; a.download = name; a.click();
+    setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+  } catch (e) {
+    if (overlay) overlay.style.display = 'none';
+    showAiMsg('Erro ao gerar GIF: ' + e.message, 'error');
   }
 }
 

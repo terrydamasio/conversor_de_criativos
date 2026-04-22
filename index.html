@@ -34,7 +34,7 @@
         </button>
       </nav>
 
-      <div class="header-badge">HTML → PNG</div>
+      <div class="header-badge">HTML → PNG / GIF</div>
     </div>
   </header>
 
@@ -111,6 +111,38 @@
           </div>
         </div>
         <div class="field">
+          <label class="label">Formato de exportação</label>
+          <div class="btn-group" id="formatGroup">
+            <button class="btn-option active" data-format="png">PNG</button>
+            <button class="btn-option" data-format="gif">GIF Animado</button>
+          </div>
+        </div>
+        <div class="field" id="gifSettings" style="display:none">
+          <div class="field-half-row">
+            <div>
+              <label class="label">FPS do GIF</label>
+              <select class="select" id="gifFpsSelect">
+                <option value="6">6 fps — menor</option>
+                <option value="8">8 fps</option>
+                <option value="10" selected>10 fps — padrão</option>
+                <option value="12">12 fps</option>
+                <option value="15">15 fps — mais suave</option>
+              </select>
+            </div>
+            <div>
+              <label class="label">Duração</label>
+              <select class="select" id="gifDurationSelect">
+                <option value="1000">1 segundo</option>
+                <option value="2000" selected>2 segundos</option>
+                <option value="3000">3 segundos</option>
+                <option value="4000">4 segundos</option>
+                <option value="5000">5 segundos</option>
+              </select>
+            </div>
+          </div>
+          <span class="field-hint">Cada frame captura a animação CSS em um momento diferente.</span>
+        </div>
+        <div class="field">
           <label class="label">Tempo de espera antes de capturar</label>
           <select class="select" id="waitSelect">
             <option value="300">300ms — HTML estático</option>
@@ -127,7 +159,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/>
           </svg>
-          Converter para PNG
+          <span id="convertBtnLabel">Converter para PNG</span>
         </button>
         <p class="convert-hint" id="convertHint">Faça upload de pelo menos um arquivo HTML</p>
       </div>
@@ -368,8 +400,15 @@
             </svg>
             Exportar HTML
           </button>
+          <button class="btn-convert btn-export-gif" id="genExportGIF">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z"/>
+            </svg>
+            Exportar GIF
+          </button>
         </div>
-        <p class="convert-hint" style="margin-top:8px">PNG para imagem final · HTML para banner animado</p>
+        <p class="convert-hint" style="margin-top:8px">PNG estático · HTML animado · GIF animado</p>
       </div>
 
     </aside>
@@ -441,6 +480,7 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="templates.js"></script>
   <script src="app.js"></script>
+  <script src="gif-export.js"></script>
   <script src="generator.js"></script>
 </body>
 </html>
