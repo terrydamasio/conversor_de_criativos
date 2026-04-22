@@ -1205,6 +1205,49 @@ textarea.input {
   line-height: 1.5;
 }
 
+/* ── Field 2-column grid (valores) ── */
+.field-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+/* ── Label inline hint ── */
+.label-hint-inline {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+/* ── Export row: dois botões lado a lado ── */
+.export-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-export-png {
+  font-size: 13px;
+  padding: 11px 10px;
+}
+
+.btn-export-html {
+  font-size: 13px;
+  padding: 11px 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.btn-export-html:hover:not(:disabled) {
+  background: var(--card-hover);
+  border-color: var(--border-light);
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+
 /* ============================================================
    RESPONSIVE — Generator
    ============================================================ */

@@ -177,32 +177,71 @@
       <div class="section">
         <span class="section-title">Personalizar conteúdo</span>
 
+        <!-- Texto principal -->
         <div class="field">
-          <label class="label">Headline</label>
-          <input type="text" class="input" id="genHeadline" placeholder="Título principal do anúncio" maxlength="80">
+          <label class="label">Headline / Título</label>
+          <input type="text" class="input" id="genHeadline" placeholder="Ex: Simule os valores agora" maxlength="80">
         </div>
         <div class="field">
           <label class="label">Subtítulo / Descrição</label>
-          <textarea class="input" id="genSubtitle" rows="2" placeholder="Subtítulo ou benefício principal" maxlength="120" style="resize:vertical;min-height:52px"></textarea>
+          <textarea class="input" id="genSubtitle" rows="2" placeholder="Ex: Confirme seus dados e descubra quanto pode solicitar." maxlength="160" style="resize:vertical;min-height:52px"></textarea>
         </div>
         <div class="field field-half-row">
           <div>
-            <label class="label">CTA</label>
-            <input type="text" class="input" id="genCta" placeholder="Saiba Mais" maxlength="30">
+            <label class="label">CTA (botão)</label>
+            <input type="text" class="input" id="genCta" placeholder="SIMULAR AGORA" maxlength="30">
           </div>
           <div>
             <label class="label">Badge / Tag</label>
-            <input type="text" class="input" id="genTag" placeholder="Promoção" maxlength="20">
+            <input type="text" class="input" id="genTag" placeholder="PRÉ-APROVADO" maxlength="24">
           </div>
         </div>
+
+        <!-- Site e URL -->
+        <div class="field field-half-row">
+          <div>
+            <label class="label">Site / Domínio</label>
+            <input type="text" class="input" id="genDomain" placeholder="creditario.com" maxlength="50">
+          </div>
+          <div>
+            <label class="label">URL de destino</label>
+            <input type="url" class="input" id="genClickUrl" placeholder="https://..." maxlength="300">
+          </div>
+        </div>
+
+        <!-- Valores / Chips / Botões -->
+        <div class="field">
+          <label class="label">
+            Valores / Chips
+            <span class="label-hint-inline">— aparece nos templates de grid/simulador</span>
+          </label>
+          <div class="field-2col">
+            <input type="text" class="input" id="genValue1" placeholder="R$ 1.000 ou Até $500.000" maxlength="30">
+            <input type="text" class="input" id="genValue2" placeholder="R$ 1.500 ou 100% en línea" maxlength="30">
+          </div>
+          <div class="field-2col" style="margin-top:6px">
+            <input type="text" class="input" id="genValue3" placeholder="R$ 2.000" maxlength="30">
+            <input type="text" class="input" id="genValue4" placeholder="R$ 2.500" maxlength="30">
+          </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="field">
+          <label class="label">Rodapé / Disclaimer</label>
+          <textarea class="input" id="genDisclaimer" rows="2"
+            placeholder="*Sujeito à análise e condições da instituição."
+            maxlength="300" style="resize:vertical;min-height:48px"></textarea>
+        </div>
+
+        <!-- Cores -->
         <div class="field field-half-row">
           <div>
             <label class="label">Cor primária</label>
-            <input type="color" class="input-color" id="genPrimaryColor" value="#7c3aed">
+            <input type="color" class="input-color" id="genPrimaryColor" value="#158809">
           </div>
           <div>
-            <label class="label">Cor secundária</label>
-            <input type="color" class="input-color" id="genSecondaryColor" value="#10b981">
+            <label class="label">Cor secundária / Fundo chip</label>
+            <input type="color" class="input-color" id="genSecondaryColor" value="#dcfce7">
           </div>
         </div>
       </div>
@@ -316,12 +355,21 @@
 
       <!-- Export -->
       <div class="section">
-        <button class="btn-convert" id="genExportBtn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
-          </svg>
-          Exportar como PNG
-        </button>
+        <div class="export-row">
+          <button class="btn-convert btn-export-png" id="genExportPNG">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+            </svg>
+            Exportar PNG
+          </button>
+          <button class="btn-convert btn-export-html" id="genExportHTML">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/>
+            </svg>
+            Exportar HTML
+          </button>
+        </div>
+        <p class="convert-hint" style="margin-top:8px">PNG para imagem final · HTML para banner animado</p>
       </div>
 
     </aside>

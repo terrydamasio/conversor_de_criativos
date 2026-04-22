@@ -27,11 +27,13 @@ var gd = {};  // populated on init
 function genInit() {
   var ids = [
     'genTemplateGrid','genHeadline','genSubtitle','genCta','genTag',
+    'genDomain','genClickUrl',
+    'genValue1','genValue2','genValue3','genValue4','genDisclaimer',
     'genPrimaryColor','genSecondaryColor',
     'genSizeSelect','genCustomSizeField','genCustomWidth','genCustomHeight',
     'genPreviewIframe','genPreviewWrapper','genPreviewEmpty','genPreviewArea','genPreviewMeta',
     'genApiKey','genCopyContext','genBtnCopy','genCreativeBrief','genBtnCreative',
-    'genAiMessage','genCopyResults','genExportBtn','genScaleGroup',
+    'genAiMessage','genCopyResults','genExportPNG','genExportHTML','genScaleGroup',
     'genAiHTMLPanel','genAiHTMLCode','genBtnApplyHTML','genBtnEditHTML'
   ];
   ids.forEach(function(id) { gd[id] = document.getElementById(id); });
@@ -123,6 +125,8 @@ function selectTemplate(tpl) {
 function bindFormListeners() {
   var fields = [
     'genHeadline','genSubtitle','genCta','genTag',
+    'genDomain','genClickUrl',
+    'genValue1','genValue2','genValue3','genValue4','genDisclaimer',
     'genPrimaryColor','genSecondaryColor','genCustomWidth','genCustomHeight'
   ];
   fields.forEach(function(id) {
@@ -152,12 +156,19 @@ function getGenParams() {
     width = parts[0]; height = parts[1];
   }
   return {
-    headline:       (gd.genHeadline       || {}).value || 'Headline Principal',
-    subtitle:       (gd.genSubtitle       || {}).value || 'Subtítulo descritivo',
-    cta:            (gd.genCta            || {}).value || 'Saiba Mais',
+    headline:       (gd.genHeadline       || {}).value || '',
+    subtitle:       (gd.genSubtitle       || {}).value || '',
+    cta:            (gd.genCta            || {}).value || '',
     tag:            (gd.genTag            || {}).value || '',
-    primaryColor:   (gd.genPrimaryColor   || {}).value || '#7c3aed',
-    secondaryColor: (gd.genSecondaryColor || {}).value || '#10b981',
+    domain:         (gd.genDomain         || {}).value || '',
+    clickUrl:       (gd.genClickUrl       || {}).value || '#',
+    value1:         (gd.genValue1         || {}).value || '',
+    value2:         (gd.genValue2         || {}).value || '',
+    value3:         (gd.genValue3         || {}).value || '',
+    value4:         (gd.genValue4         || {}).value || '',
+    disclaimer:     (gd.genDisclaimer     || {}).value || '',
+    primaryColor:   (gd.genPrimaryColor   || {}).value || '#158809',
+    secondaryColor: (gd.genSecondaryColor || {}).value || '#dcfce7',
     width, height
   };
 }
@@ -430,19 +441,35 @@ function editAiHTML() {
 // EXPORT
 // ============================================================
 function bindExport() {
-  if (gd.genExportBtn) gd.genExportBtn.addEventListener('click', exportCreative);
+  if (gd.genExportPNG)  gd.genExportPNG.addEventListener('click', exportAsPNG);
+  if (gd.genExportHTML) gd.genExportHTML.addEventListener('click', exportAsHTML);
 }
 
-async function exportCreative() {
+function getExportHTML() {
   var params = getGenParams();
-  var html;
-  if (genState.aiHTML) {
-    html = genState.aiHTML;
-  } else if (genState.selectedTemplate) {
-    html = genState.selectedTemplate.render(params);
-  } else {
-    return;
-  }
+  if (genState.aiHTML) return { html: genState.aiHTML, params: params };
+  if (genState.selectedTemplate) return { html: genState.selectedTemplate.render(params), params: params };
+  return null;
+}
+
+function exportAsHTML() {
+  var result = getExportHTML();
+  if (!result) return;
+  var params = result.params;
+  var html   = result.html;
+  var blob   = new Blob([html], { type: 'text/html; charset=utf-8' });
+  var url    = URL.createObjectURL(blob);
+  var name   = 'criativo_' + params.width + 'x' + params.height + '.html';
+  var a      = Object.assign(document.createElement('a'), { href: url, download: name });
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(url); }, 3000);
+}
+
+async function exportAsPNG() {
+  var result = getExportHTML();
+  if (!result) return;
+  var params = result.params;
+  var html   = result.html;
 
   // Show shared progress overlay
   var overlay  = document.getElementById('progressOverlay');
@@ -452,7 +479,7 @@ async function exportCreative() {
   var pCounter = document.getElementById('progressCounter');
 
   if (overlay) overlay.style.display = 'flex';
-  if (pTitle)  pTitle.textContent  = 'Exportando criativo...';
+  if (pTitle)  pTitle.textContent  = 'Exportando como PNG...';
   if (pDetail) pDetail.textContent = params.width + '×' + params.height + 'px @ ' + genState.exportScale + 'x';
   if (pFill)   pFill.style.width   = '40%';
   if (pCounter) pCounter.textContent = '';

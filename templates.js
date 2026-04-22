@@ -1,477 +1,281 @@
 'use strict';
 
-// Each template receives a params object:
-// { headline, subtitle, cta, tag, primaryColor, secondaryColor, width, height }
-// and returns a complete self-contained HTML string.
+// Templates baseados nos criativos reais da AdsUp.
+// Parâmetros disponíveis:
+// { headline, subtitle, cta, tag, domain, clickUrl,
+//   value1, value2, value3, value4, disclaimer,
+//   primaryColor, secondaryColor, width, height }
 
 var TEMPLATES = [
 
   /* ──────────────────────────────────────────────
-     1. GRADIENT BOLD
+     1. CARD SIMULATOR  (creativo_1_usd.html)
+     Card branco, chips de valor, CTA arredondado
   ────────────────────────────────────────────── */
   {
-    id: 'gradient-bold',
-    name: 'Gradient Bold',
-    desc: 'Vibrante e impactante',
+    id: 'card-simulator',
+    name: 'Card Simulator',
+    desc: 'Card branco com chips de valor',
     render: function (p) {
       var w = p.width || 336, h = p.height || 280;
-      var pc = p.primaryColor || '#7c3aed';
-      var sc = p.secondaryColor || '#10b981';
-      var hl = p.headline || 'Headline Principal';
-      var sub = p.subtitle || 'Subtítulo descritivo do produto';
-      var cta = p.cta || 'Saiba Mais';
-      var tag = p.tag || '';
-      var wide = w / h > 2.2;
+      var s = Math.min(w / 336, h / 280);
+      var sr = function (px) { return Math.round(px * s); };
 
-      if (wide) {
-        var hls = Math.max(Math.round(h * 0.30), 13);
-        var subs = Math.max(Math.round(h * 0.19), 10);
-        var ctas = Math.max(Math.round(h * 0.21), 10);
-        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{background:linear-gradient(90deg,#1a0030 0%,${pc} 55%,#001028 100%);
-font-family:system-ui,-apple-system,Arial,sans-serif;display:flex;align-items:center;
-justify-content:space-between;padding:0 ${Math.round(w * .03)}px;}
-.texts{display:flex;flex-direction:column;gap:${Math.round(h * .06)}px;}
-.hl{font-size:${hls}px;font-weight:900;color:#fff;letter-spacing:-.3px;line-height:1.05;}
-.sub{font-size:${subs}px;color:rgba(255,255,255,.7);line-height:1.3;}
-.cta{background:#fff;color:${pc};border:none;border-radius:${Math.max(Math.round(h * .12), 4)}px;
-padding:${Math.round(h * .14)}px ${Math.round(w * .03)}px;font-size:${ctas}px;font-weight:700;
-white-space:nowrap;cursor:pointer;flex-shrink:0;}
-</style></head><body>
-<div class="texts"><div class="hl">${hl}</div><div class="sub">${sub}</div></div>
-<button class="cta">${cta}</button></body></html>`;
-      }
+      var pc         = p.primaryColor   || '#158809';
+      var sc         = p.secondaryColor || '#dcfce7';
+      var domain     = p.domain      || 'creditario.com';
+      var badge      = p.tag         || 'Análisis rápida';
+      var hl         = p.headline    || 'Simula los montos ahora';
+      var sub        = p.subtitle    || 'Confirma tus datos y descubre cuánto puedes solicitar en pocos minutos.';
+      var chip1      = p.value1      || 'Hasta $ 500.000';
+      var chip2      = p.value2      || '100% en línea';
+      var cta        = p.cta         || 'SIMULAR AHORA';
+      var disclaimer = p.disclaimer  || '*Sujeto a análisis, verificación de datos y condiciones de la institución. Ejemplo ilustrativo.';
+      var safeUrl    = (p.clickUrl || '#').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 
-      var hls = Math.max(Math.round(h * .13), 14);
-      var subs = Math.max(Math.round(h * .052), 11);
-      var ctas = Math.max(Math.round(h * .052), 11);
-      var gap = Math.max(Math.round(h * .03), 6);
-      var pad = Math.round(h * .07);
-      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden;position:relative}
-body{background:linear-gradient(145deg,#1a0030 0%,${pc} 55%,#001028 100%);
-font-family:system-ui,-apple-system,Arial,sans-serif;display:flex;align-items:center;justify-content:center;}
-.glow{position:absolute;width:65%;padding-bottom:65%;top:50%;left:50%;
-transform:translate(-50%,-50%);border-radius:50%;
-background:radial-gradient(circle,${pc}55 0%,transparent 65%);
-animation:g 3s ease-in-out infinite;pointer-events:none;}
-@keyframes g{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.7}
-50%{transform:translate(-50%,-50%) scale(1.25);opacity:1}}
-.wrap{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
-text-align:center;padding:${pad}px;gap:${gap}px;}
-.badge{font-size:${Math.max(Math.round(h * .038), 9)}px;font-weight:600;letter-spacing:2px;
-text-transform:uppercase;color:${sc};border:1px solid ${sc}55;
-padding:${Math.round(h * .014)}px ${Math.round(w * .036)}px;border-radius:${Math.round(h * .025)}px;}
-.hl{font-size:${hls}px;font-weight:900;line-height:1.05;color:#fff;letter-spacing:-.4px;}
-.sub{font-size:${subs}px;line-height:1.45;color:rgba(255,255,255,.72);}
-.cta{background:#fff;color:${pc};border:none;border-radius:${Math.max(Math.round(h * .03), 4)}px;
-padding:${Math.round(h * .042)}px ${Math.round(w * .09)}px;font-size:${ctas}px;font-weight:700;
-cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);margin-top:${Math.round(gap * .5)}px;}
-</style></head><body><div class="glow"></div>
-<div class="wrap">${tag ? `<div class="badge">${tag}</div>` : ''}<div class="hl">${hl}</div>
-<div class="sub">${sub}</div><button class="cta">${cta}</button></div></body></html>`;
-    }
-  },
-
-  /* ──────────────────────────────────────────────
-     2. NEON DARK
-  ────────────────────────────────────────────── */
-  {
-    id: 'neon-dark',
-    name: 'Neon Dark',
-    desc: 'Tech e futurista',
-    render: function (p) {
-      var w = p.width || 336, h = p.height || 280;
-      var pc = p.primaryColor || '#00e5ff';
-      var sc = p.secondaryColor || '#ff00cc';
-      var hl = p.headline || 'Headline Principal';
-      var sub = p.subtitle || 'Subtítulo aqui';
-      var cta = p.cta || 'Explorar';
-      var tag = p.tag || '';
-      var wide = w / h > 2.2;
-
-      if (wide) {
-        var hls = Math.max(Math.round(h * .32), 13);
-        var subs = Math.max(Math.round(h * .19), 10);
-        var ctas = Math.max(Math.round(h * .21), 10);
-        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{background:#000;font-family:system-ui,-apple-system,Arial,sans-serif;
-display:flex;align-items:center;justify-content:space-between;
-padding:0 ${Math.round(w * .03)}px;border:1px solid ${pc}33;}
-.texts{display:flex;flex-direction:column;gap:${Math.round(h * .05)}px;}
-.hl{font-size:${hls}px;font-weight:900;color:${pc};
-text-shadow:0 0 ${Math.round(hls * .5)}px ${pc}88;letter-spacing:-.2px;}
-.sub{font-size:${subs}px;color:rgba(255,255,255,.55);}
-.cta{background:transparent;color:${pc};border:1px solid ${pc};
-border-radius:${Math.max(Math.round(h * .12), 4)}px;
-padding:${Math.round(h * .12)}px ${Math.round(w * .025)}px;
-font-size:${ctas}px;font-weight:700;white-space:nowrap;cursor:pointer;
-box-shadow:0 0 ${Math.round(h * .15)}px ${pc}55,inset 0 0 ${Math.round(h * .15)}px ${pc}22;
-text-shadow:0 0 8px ${pc};}
-</style></head><body>
-<div class="texts"><div class="hl">${hl}</div><div class="sub">${sub}</div></div>
-<button class="cta">${cta}</button></body></html>`;
-      }
-
-      var hls = Math.max(Math.round(h * .13), 14);
-      var subs = Math.max(Math.round(h * .052), 11);
-      var ctas = Math.max(Math.round(h * .052), 11);
-      var gap = Math.max(Math.round(h * .03), 6);
-      var pad = Math.round(h * .07);
-      var grid = Math.round(w / 8);
-      var gridh = Math.round(h / 6);
-      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden;position:relative}
-body{background:#060610;font-family:system-ui,-apple-system,Arial,sans-serif;
-display:flex;align-items:center;justify-content:center;}
-.grid{position:absolute;inset:0;
-background-image:linear-gradient(${pc}12 1px,transparent 1px),linear-gradient(90deg,${pc}12 1px,transparent 1px);
-background-size:${grid}px ${gridh}px;animation:gr 20s linear infinite;}
-@keyframes gr{0%{background-position:0 0}100%{background-position:${grid}px ${gridh}px}}
-.scan{position:absolute;width:100%;height:2px;
-background:linear-gradient(90deg,transparent,${pc}99,transparent);
-animation:sc 2s linear infinite;top:0;}
-@keyframes sc{0%{top:0}100%{top:${h}px}}
-.wrap{position:relative;z-index:1;display:flex;flex-direction:column;
-align-items:center;text-align:center;padding:${pad}px;gap:${gap}px;}
-.badge{font-size:${Math.max(Math.round(h * .038), 9)}px;font-weight:600;letter-spacing:3px;
-text-transform:uppercase;color:${sc};text-shadow:0 0 10px ${sc};}
-.hl{font-size:${hls}px;font-weight:900;line-height:1.05;color:#fff;
-text-shadow:0 0 ${Math.round(hls * .4)}px ${pc}bb,0 0 ${Math.round(hls * .8)}px ${pc}44;}
-.sub{font-size:${subs}px;line-height:1.45;color:rgba(255,255,255,.55);}
-.cta{background:transparent;color:${pc};border:1px solid ${pc};
-border-radius:${Math.max(Math.round(h * .03), 4)}px;
-padding:${Math.round(h * .042)}px ${Math.round(w * .09)}px;
-font-size:${ctas}px;font-weight:700;cursor:pointer;
-box-shadow:0 0 ${Math.round(hls * .5)}px ${pc}55,inset 0 0 ${Math.round(hls * .3)}px ${pc}22;
-text-shadow:0 0 8px ${pc};margin-top:${Math.round(gap * .5)}px;}
-</style></head><body><div class="grid"></div><div class="scan"></div>
-<div class="wrap">${tag ? `<div class="badge">${tag}</div>` : ''}<div class="hl">${hl}</div>
-<div class="sub">${sub}</div><button class="cta">${cta}</button></div></body></html>`;
-    }
-  },
-
-  /* ──────────────────────────────────────────────
-     3. CLEAN MINIMAL
-  ────────────────────────────────────────────── */
-  {
-    id: 'clean-minimal',
-    name: 'Clean Minimal',
-    desc: 'Elegante e sofisticado',
-    render: function (p) {
-      var w = p.width || 336, h = p.height || 280;
-      var pc = p.primaryColor || '#1d4ed8';
-      var sc = p.secondaryColor || '#f59e0b';
-      var hl = p.headline || 'Headline Principal';
-      var sub = p.subtitle || 'Subtítulo aqui';
-      var cta = p.cta || 'Saiba Mais';
-      var tag = p.tag || '';
-      var wide = w / h > 2.2;
-
-      if (wide) {
-        var hls = Math.max(Math.round(h * .30), 13);
-        var subs = Math.max(Math.round(h * .18), 10);
-        var ctas = Math.max(Math.round(h * .20), 10);
-        var bw = Math.round(h * .12);
-        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{background:#fff;font-family:system-ui,-apple-system,Arial,sans-serif;
-display:flex;align-items:center;justify-content:space-between;
-padding:0 ${Math.round(w * .03)}px;border-left:${bw}px solid ${pc};}
-.texts{flex:1;display:flex;flex-direction:column;gap:${Math.round(h * .04)}px;
-padding-left:${Math.round(w * .02)}px;}
-.hl{font-size:${hls}px;font-weight:800;color:#111;letter-spacing:-.3px;line-height:1.1;}
-.sub{font-size:${subs}px;color:#666;line-height:1.3;}
-.cta{background:${pc};color:#fff;border:none;border-radius:${Math.max(Math.round(h * .10), 4)}px;
-padding:${Math.round(h * .12)}px ${Math.round(w * .025)}px;font-size:${ctas}px;font-weight:700;
-white-space:nowrap;cursor:pointer;flex-shrink:0;}
-</style></head><body>
-<div class="texts"><div class="hl">${hl}</div><div class="sub">${sub}</div></div>
-<button class="cta">${cta}</button></body></html>`;
-      }
-
-      var hls = Math.max(Math.round(h * .12), 14);
-      var subs = Math.max(Math.round(h * .050), 11);
-      var ctas = Math.max(Math.round(h * .050), 11);
-      var gap = Math.max(Math.round(h * .028), 5);
-      var pad = Math.round(h * .08);
-      var accentH = Math.max(Math.round(h * .025), 3);
-      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{background:#fff;font-family:system-ui,-apple-system,Arial,sans-serif;
-display:flex;flex-direction:column;align-items:center;justify-content:center;
-padding:${pad}px;gap:${gap}px;text-align:center;position:relative;}
-.accent{position:absolute;top:0;left:0;right:0;height:${accentH}px;
-background:linear-gradient(90deg,${pc},${sc});}
-.badge{font-size:${Math.max(Math.round(h * .036), 9)}px;font-weight:600;letter-spacing:2px;
-text-transform:uppercase;color:${pc};}
-.hl{font-size:${hls}px;font-weight:800;line-height:1.1;color:#111;letter-spacing:-.3px;}
-.divider{width:${Math.round(w * .1)}px;height:2px;background:${sc};border-radius:2px;}
-.sub{font-size:${subs}px;line-height:1.5;color:#555;}
-.cta{background:${pc};color:#fff;border:none;border-radius:${Math.max(Math.round(h * .03), 4)}px;
-padding:${Math.round(h * .04)}px ${Math.round(w * .09)}px;
-font-size:${ctas}px;font-weight:700;cursor:pointer;margin-top:${Math.round(gap * .5)}px;}
-</style></head><body><div class="accent"></div>
-${tag ? `<div class="badge">${tag}</div>` : ''}
-<div class="hl">${hl}</div><div class="divider"></div>
-<div class="sub">${sub}</div><button class="cta">${cta}</button></body></html>`;
-    }
-  },
-
-  /* ──────────────────────────────────────────────
-     4. E-COMMERCE
-  ────────────────────────────────────────────── */
-  {
-    id: 'ecommerce',
-    name: 'E-commerce',
-    desc: 'Produto com oferta',
-    render: function (p) {
-      var w = p.width || 336, h = p.height || 280;
-      var pc = p.primaryColor || '#dc2626';
-      var sc = p.secondaryColor || '#fbbf24';
-      var hl = p.headline || 'Promoção Imperdível';
-      var sub = p.subtitle || 'Frete grátis • Parcele sem juros';
-      var cta = p.cta || 'Comprar Agora';
-      var tag = p.tag || 'ATÉ 50% OFF';
-      var wide = w / h > 2.2;
-
-      if (wide) {
-        var hls = Math.max(Math.round(h * .28), 13);
-        var subs = Math.max(Math.round(h * .18), 10);
-        var ctas = Math.max(Math.round(h * .20), 10);
-        var bs = Math.max(Math.round(h * .22), 11);
-        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{background:#fff;font-family:system-ui,-apple-system,Arial,sans-serif;
-display:flex;align-items:center;justify-content:space-between;
-padding:0 ${Math.round(w * .025)}px;border-top:${Math.round(h * .08)}px solid ${pc};}
-.badge{background:${pc};color:#fff;font-size:${bs}px;font-weight:900;
-padding:${Math.round(h * .10)}px ${Math.round(w * .02)}px;
-border-radius:${Math.round(h * .06)}px;white-space:nowrap;flex-shrink:0;}
-.texts{flex:1;padding:0 ${Math.round(w * .02)}px;display:flex;flex-direction:column;gap:${Math.round(h * .04)}px;}
-.hl{font-size:${hls}px;font-weight:800;color:#111;line-height:1.1;}
-.sub{font-size:${subs}px;color:#666;}
-.cta{background:${pc};color:#fff;border:none;border-radius:${Math.round(h * .10)}px;
-padding:${Math.round(h * .12)}px ${Math.round(w * .025)}px;font-size:${ctas}px;font-weight:700;
-white-space:nowrap;cursor:pointer;flex-shrink:0;}
-</style></head><body>
-<div class="badge">${tag}</div>
-<div class="texts"><div class="hl">${hl}</div><div class="sub">${sub}</div></div>
-<button class="cta">${cta}</button></body></html>`;
-      }
-
-      var hls = Math.max(Math.round(h * .11), 14);
-      var subs = Math.max(Math.round(h * .046), 10);
-      var ctas = Math.max(Math.round(h * .05), 11);
-      var bads = Math.max(Math.round(h * .11), 14);
-      var gap = Math.max(Math.round(h * .025), 5);
-      var pad = Math.round(h * .06);
-      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden;position:relative}
-body{background:linear-gradient(180deg,#fff 0%,#fff7f7 100%);
-font-family:system-ui,-apple-system,Arial,sans-serif;display:flex;flex-direction:column;
-align-items:center;justify-content:center;padding:${pad}px;gap:${gap}px;text-align:center;}
-.wave{position:absolute;bottom:0;left:0;right:0;height:30%;background:${pc};
-clip-path:ellipse(60% 100% at 50% 100%);}
-.badge{position:relative;z-index:1;background:${pc};color:#fff;
-font-size:${bads}px;font-weight:900;letter-spacing:.5px;
-padding:${Math.round(h * .025)}px ${Math.round(w * .05)}px;
-border-radius:${Math.round(h * .025)}px;
-box-shadow:0 ${Math.round(h * .015)}px ${Math.round(h * .04)}px ${pc}66;
-animation:pop .6s cubic-bezier(.34,1.56,.64,1) both;}
-@keyframes pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
-.hl{position:relative;z-index:1;font-size:${hls}px;font-weight:800;line-height:1.1;color:#111;letter-spacing:-.3px;}
-.sub{position:relative;z-index:1;font-size:${subs}px;color:#555;line-height:1.4;}
-.cta{position:relative;z-index:1;background:#fff;color:${pc};border:2px solid ${pc};
-border-radius:${Math.max(Math.round(h * .03), 4)}px;
-padding:${Math.round(h * .04)}px ${Math.round(w * .08)}px;
-font-size:${ctas}px;font-weight:800;cursor:pointer;
-box-shadow:0 ${Math.round(h * .02)}px ${Math.round(h * .04)}px rgba(0,0,0,.15);}
-</style></head><body><div class="wave"></div>
-<div class="badge">${tag}</div>
-<div class="hl">${hl}</div><div class="sub">${sub}</div>
-<button class="cta">${cta}</button></body></html>`;
-    }
-  },
-
-  /* ──────────────────────────────────────────────
-     5. SPLIT COLOR
-  ────────────────────────────────────────────── */
-  {
-    id: 'split-color',
-    name: 'Split Color',
-    desc: 'Divisão com contraste',
-    render: function (p) {
-      var w = p.width || 336, h = p.height || 280;
-      var pc = p.primaryColor || '#0f172a';
-      var sc = p.secondaryColor || '#f97316';
-      var hl = p.headline || 'Headline Principal';
-      var sub = p.subtitle || 'Subtítulo aqui';
-      var cta = p.cta || 'Clique Aqui';
-      var tag = p.tag || '';
-      var wide = w / h > 2.2;
-
-      if (wide) {
-        var sw = Math.round(w * .38);
-        var hls = Math.max(Math.round(h * .28), 13);
-        var subs = Math.max(Math.round(h * .18), 10);
-        var ctas = Math.max(Math.round(h * .20), 10);
-        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{font-family:system-ui,-apple-system,Arial,sans-serif;display:flex;}
-.left{width:${sw}px;height:${h}px;background:${pc};display:flex;align-items:center;
-justify-content:center;padding:${Math.round(w * .02)}px;flex-shrink:0;}
-.brand{font-size:${Math.max(Math.round(h * .30), 12)}px;font-weight:900;color:#fff;letter-spacing:-.5px;
-text-align:center;line-height:1.1;}
-.brand span{color:${sc};}
-.right{flex:1;background:#fff;display:flex;flex-direction:column;align-items:flex-start;
-justify-content:center;padding:${Math.round(w * .02)}px;gap:${Math.round(h * .04)}px;}
-.hl{font-size:${hls}px;font-weight:800;color:#111;letter-spacing:-.3px;line-height:1.1;}
-.sub{font-size:${subs}px;color:#666;}
-.cta{background:${sc};color:#fff;border:none;border-radius:${Math.max(Math.round(h * .10), 4)}px;
-padding:${Math.round(h * .12)}px ${Math.round(w * .025)}px;font-size:${ctas}px;font-weight:700;
-cursor:pointer;white-space:nowrap;}
-</style></head><body>
-<div class="left"><div class="brand">Ads<span>Up</span></div></div>
-<div class="right"><div class="hl">${hl}</div><div class="sub">${sub}</div>
-<button class="cta">${cta}</button></div></body></html>`;
-      }
-
-      var lw = Math.round(w * .42);
-      var hls = Math.max(Math.round(h * .12), 14);
-      var subs = Math.max(Math.round(h * .048), 11);
-      var ctas = Math.max(Math.round(h * .048), 11);
-      var gap = Math.max(Math.round(h * .028), 5);
-      var pad = Math.round(h * .07);
-      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{font-family:system-ui,-apple-system,Arial,sans-serif;display:flex;}
-.left{width:${lw}px;height:${h}px;background:${pc};display:flex;flex-direction:column;
-align-items:center;justify-content:center;padding:${Math.round(lw * .1)}px;gap:${Math.round(h * .04)}px;
-position:relative;flex-shrink:0;}
-.left::after{content:'';position:absolute;right:-${Math.round(h * .06)}px;top:0;bottom:0;
-width:${Math.round(h * .12)}px;background:${pc};
-clip-path:polygon(0 0,0% 100%,100% 100%,100% 0);}
-.logo{font-size:${Math.max(Math.round(h * .11), 13)}px;font-weight:900;color:#fff;
-letter-spacing:-.3px;line-height:1;}
-.logo span{color:${sc};}
-.tagline{font-size:${Math.max(Math.round(h * .042), 9)}px;color:rgba(255,255,255,.6);
-text-align:center;line-height:1.3;}
-.accent{width:${Math.round(lw * .25)}px;height:3px;background:${sc};border-radius:2px;}
-.right{flex:1;background:#f8fafc;display:flex;flex-direction:column;
-justify-content:center;padding:${pad}px ${Math.round(h * .06)}px;gap:${gap}px;
-padding-left:${Math.round(lw * .08 + h * .12)}px;}
-.badge{font-size:${Math.max(Math.round(h * .036), 9)}px;font-weight:600;letter-spacing:1.5px;
-text-transform:uppercase;color:${sc};}
-.hl{font-size:${hls}px;font-weight:800;line-height:1.1;color:#111;letter-spacing:-.3px;}
-.sub{font-size:${subs}px;line-height:1.5;color:#555;}
-.cta{background:${sc};color:#fff;border:none;border-radius:${Math.max(Math.round(h * .03), 4)}px;
-padding:${Math.round(h * .04)}px ${Math.round(w * .07)}px;font-size:${ctas}px;font-weight:700;
-cursor:pointer;align-self:flex-start;}
-</style></head><body>
-<div class="left">
-  <div class="logo">Ads<span>Up</span></div>
-  <div class="accent"></div>
-  <div class="tagline">AdForge</div>
+      return `<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:${w}px;height:${h}px;overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+  background:#f3f4f6;color:#0f172a;}
+.banner{width:${sr(320)}px;height:${sr(264)}px;background:#fff;margin:${sr(8)}px auto;
+  border-radius:${sr(14)}px;box-shadow:0 ${sr(6)}px ${sr(18)}px rgba(15,23,42,.12);
+  padding:${sr(14)}px;display:flex;flex-direction:column;
+  cursor:pointer;border:1px solid #e5e7eb;}
+.top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:${sr(10)}px;}
+.brand{display:flex;align-items:center;gap:${sr(7)}px;font-size:${sr(12)}px;color:#111827;}
+.brand-dot{width:${sr(10)}px;height:${sr(10)}px;border-radius:${sr(3)}px;background:${pc};}
+.badge-pill{background:${pc};color:#fff;padding:${sr(4)}px ${sr(10)}px;
+  border-radius:999px;font-size:${sr(11)}px;font-weight:600;white-space:nowrap;}
+.title{font-size:${sr(17)}px;line-height:1.3;font-weight:700;margin-bottom:${sr(4)}px;}
+.subtitle{font-size:${sr(13)}px;line-height:1.4;color:#4b5563;margin-bottom:${sr(12)}px;}
+.chips{display:flex;gap:${sr(8)}px;margin-bottom:${sr(16)}px;}
+.chip{padding:${sr(8)}px ${sr(10)}px;border-radius:${sr(9)}px;font-size:${sr(13)}px;
+  font-weight:600;white-space:nowrap;}
+.chip1{background:${sc};border:1px solid ${sc};color:${pc};}
+.chip2{border:1px solid #e5e7eb;background:#f9fafb;border-radius:999px;font-weight:500;color:#374151;}
+.cta-wrap{margin-top:auto;}
+.btn{width:100%;border:none;border-radius:999px;padding:${sr(11)}px;
+  font-size:${sr(14)}px;font-weight:700;text-align:center;
+  background:${pc};color:#fff;box-shadow:0 ${sr(8)}px ${sr(18)}px ${pc}55;
+  cursor:pointer;letter-spacing:.02em;}
+.fp{margin-top:${sr(10)}px;font-size:${sr(9)}px;color:#9ca3af;line-height:1.35;}
+</style></head>
+<body data-href="${safeUrl}">
+<div class="banner" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">
+  <div class="top-row">
+    <div class="brand"><span class="brand-dot"></span><span>${domain}</span></div>
+    <div class="badge-pill">${badge}</div>
+  </div>
+  <div class="title">${hl}</div>
+  <div class="subtitle">${sub}</div>
+  <div class="chips">
+    <div class="chip chip1">${chip1}</div>
+    <div class="chip chip2">${chip2}</div>
+  </div>
+  <div class="cta-wrap">
+    <div class="btn">${cta}</div>
+    <div class="fp">${disclaimer}</div>
+  </div>
 </div>
-<div class="right">
-  ${tag ? `<div class="badge">${tag}</div>` : ''}
-  <div class="hl">${hl}</div>
-  <div class="sub">${sub}</div>
-  <button class="cta">${cta}</button>
-</div></body></html>`;
+</body></html>`;
     }
   },
 
   /* ──────────────────────────────────────────────
-     6. CORPORATE
+     2. PRÉ-APROVADO  (creditario_2000_final.html)
+     Valor destaque + CTA com animação bounce/shine
   ────────────────────────────────────────────── */
   {
-    id: 'corporate',
-    name: 'Corporate',
-    desc: 'Profissional e confiável',
+    id: 'pre-approved',
+    name: 'Pré-Aprovado',
+    desc: 'Valor destaque + CTA animado',
     render: function (p) {
       var w = p.width || 336, h = p.height || 280;
-      var pc = p.primaryColor || '#1e3a5f';
-      var sc = p.secondaryColor || '#2563eb';
-      var hl = p.headline || 'Headline Principal';
-      var sub = p.subtitle || 'Subtítulo aqui';
-      var cta = p.cta || 'Fale Conosco';
-      var tag = p.tag || '';
-      var wide = w / h > 2.2;
+      var s = Math.min(w / 336, h / 280);
+      var sr = function (px) { return Math.round(px * s); };
 
-      if (wide) {
-        var hls = Math.max(Math.round(h * .28), 13);
-        var subs = Math.max(Math.round(h * .18), 10);
-        var ctas = Math.max(Math.round(h * .20), 10);
-        return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{background:linear-gradient(90deg,${pc} 0%,#1a3258 100%);
-font-family:system-ui,-apple-system,Arial,sans-serif;display:flex;align-items:center;
-justify-content:space-between;padding:0 ${Math.round(w * .03)}px;
-border-bottom:${Math.round(h * .06)}px solid ${sc};}
-.left{display:flex;align-items:center;gap:${Math.round(w * .02)}px;}
-.logo-box{width:${Math.round(h * .5)}px;height:${Math.round(h * .5)}px;background:${sc};
-border-radius:${Math.round(h * .06)}px;display:flex;align-items:center;justify-content:center;
-font-size:${Math.max(Math.round(h * .22), 10)}px;font-weight:900;color:#fff;flex-shrink:0;}
-.texts{display:flex;flex-direction:column;gap:${Math.round(h * .04)}px;}
-.hl{font-size:${hls}px;font-weight:800;color:#fff;letter-spacing:-.3px;line-height:1.1;}
-.sub{font-size:${subs}px;color:rgba(255,255,255,.65);}
-.cta{background:${sc};color:#fff;border:none;border-radius:${Math.max(Math.round(h * .1), 4)}px;
-padding:${Math.round(h * .13)}px ${Math.round(w * .025)}px;
-font-size:${ctas}px;font-weight:700;white-space:nowrap;cursor:pointer;flex-shrink:0;}
-</style></head><body>
-<div class="left"><div class="logo-box">A</div>
-<div class="texts"><div class="hl">${hl}</div><div class="sub">${sub}</div></div></div>
-<button class="cta">${cta}</button></body></html>`;
-      }
+      var pc         = p.primaryColor  || '#198754';
+      var domain     = p.domain        || 'creditario.com';
+      var badge      = p.tag           || 'PRÉ-APROVADO';
+      var hl         = p.headline      || 'Consulte opções de crédito';
+      var sub        = p.subtitle      || 'Confirme os dados e veja as melhores recomendações para o seu perfil.';
+      var valueAmt   = p.value1        || '$500.000';
+      var valueLabel = p.value2        || 'Valor de referência';
+      var cta        = p.cta           || 'Ver opções';
+      var disclaimer = p.disclaimer    || '*Valor ilustrativo sujeito a verificação e condições da instituição. Não somos uma instituição financeira. Plataforma de recomendação e conteúdo informativo.';
+      var safeUrl    = (p.clickUrl || '#').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
 
-      var hls = Math.max(Math.round(h * .12), 14);
-      var subs = Math.max(Math.round(h * .048), 11);
-      var ctas = Math.max(Math.round(h * .048), 11);
-      var gap = Math.max(Math.round(h * .028), 5);
-      var headerH = Math.round(h * .25);
-      var pad = Math.round(h * .07);
-      return `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-*{margin:0;padding:0;box-sizing:border-box}html,body{width:${w}px;height:${h}px;overflow:hidden}
-body{background:#f1f5f9;font-family:system-ui,-apple-system,Arial,sans-serif;
-display:flex;flex-direction:column;}
-.header{height:${headerH}px;background:linear-gradient(135deg,${pc},${sc});
-display:flex;align-items:center;padding:0 ${pad}px;gap:${Math.round(w * .025)}px;
-position:relative;overflow:hidden;}
-.header::after{content:'';position:absolute;right:-${Math.round(h * .1)}px;top:-${Math.round(h * .1)}px;
-width:${Math.round(h * .4)}px;height:${Math.round(h * .4)}px;border-radius:50%;
-background:rgba(255,255,255,.06);}
-.logo-box{width:${Math.round(headerH * .55)}px;height:${Math.round(headerH * .55)}px;
-background:rgba(255,255,255,.15);border-radius:${Math.round(headerH * .12)}px;
-display:flex;align-items:center;justify-content:center;
-font-size:${Math.max(Math.round(headerH * .28), 11)}px;font-weight:900;color:#fff;flex-shrink:0;}
-.logo-text{font-size:${Math.max(Math.round(headerH * .22), 11)}px;font-weight:700;color:#fff;}
-.logo-text span{opacity:.7;font-weight:400;display:block;
-font-size:${Math.max(Math.round(headerH * .14), 9)}px;letter-spacing:.5px;}
-.body{flex:1;display:flex;flex-direction:column;justify-content:center;
-padding:${pad}px;gap:${gap}px;}
-.badge{font-size:${Math.max(Math.round(h * .036), 9)}px;font-weight:600;letter-spacing:1.5px;
-text-transform:uppercase;color:${sc};}
-.hl{font-size:${hls}px;font-weight:800;line-height:1.1;color:#0f172a;letter-spacing:-.3px;}
-.sub{font-size:${subs}px;line-height:1.5;color:#475569;}
-.cta{background:${sc};color:#fff;border:none;border-radius:${Math.max(Math.round(h * .025), 4)}px;
-padding:${Math.round(h * .038)}px ${Math.round(w * .08)}px;
-font-size:${ctas}px;font-weight:700;cursor:pointer;align-self:flex-start;
-margin-top:${Math.round(gap * .3)}px;}
-</style></head><body>
-<div class="header">
-  <div class="logo-box">A</div>
-  <div class="logo-text">AdsUp<span>AdForge</span></div>
+      return `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><style>
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+html,body{margin:0;width:${w}px;height:${h}px;background:#fff;
+  border:1px solid #dcdcdc;overflow:hidden;}
+.ad{padding:${sr(16)}px;height:100%;display:flex;flex-direction:column;}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:${sr(14)}px;}
+.brand-wrap{display:flex;align-items:center;gap:${sr(6)}px;}
+.brand-icon{width:${sr(10)}px;height:${sr(10)}px;background:${pc};border-radius:${sr(2)}px;}
+.brand{font-weight:bold;font-size:${sr(14)}px;color:#000;}
+.badge{background:#fff;color:${pc};font-size:${sr(11)}px;
+  padding:${sr(4)}px ${sr(8)}px;border-radius:${sr(12)}px;
+  font-weight:bold;border:1px solid ${pc};}
+h1{font-size:${sr(19)}px;margin:0 0 ${sr(6)}px;color:#000;}
+p{font-size:${sr(12)}px;margin:0 0 ${sr(12)}px;color:#444;line-height:1.4;}
+.value-box{display:flex;align-items:center;gap:${sr(8)}px;margin-bottom:${sr(14)}px;}
+.value{font-size:${sr(22)}px;font-weight:bold;
+  padding:${sr(6)}px ${sr(12)}px;border:1px solid #dcdcdc;
+  border-radius:${sr(6)}px;color:${pc};}
+.vtag{font-size:${sr(11)}px;color:${pc};background:#e9f8f1;
+  border-radius:20px;padding:${sr(4)}px ${sr(10)}px;font-weight:bold;}
+.cta{display:block;text-align:center;background:${pc};color:#fff;
+  font-size:${sr(16)}px;font-weight:bold;text-decoration:none;
+  padding:${sr(14)}px;border-radius:${sr(8)}px;margin-bottom:${sr(10)}px;
+  position:relative;overflow:hidden;cursor:pointer;border:none;width:100%;
+  animation:bounce 2s infinite;}
+.cta::after{content:"";position:absolute;top:0;left:-75%;width:50%;height:100%;
+  background:linear-gradient(120deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.5) 50%,rgba(255,255,255,0) 100%);
+  animation:shine 2.5s infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(${sr(-4)}px)}}
+@keyframes shine{0%{left:-75%}100%{left:125%}}
+.foot{font-size:${sr(10)}px;color:#777;line-height:1.3;margin-top:auto;}
+.bold{font-weight:bold;}
+</style></head>
+<body data-href="${safeUrl}">
+<div class="ad">
+  <div class="top">
+    <div class="brand-wrap">
+      <div class="brand-icon"></div>
+      <div class="brand">${domain}</div>
+    </div>
+    <div class="badge">${badge}</div>
+  </div>
+  <h1>${hl}</h1>
+  <p>${sub}</p>
+  <div class="value-box">
+    <div class="value">${valueAmt}</div>
+    <div class="vtag">${valueLabel}</div>
+  </div>
+  <button class="cta" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${cta}</button>
+  <div class="foot">${disclaimer}</div>
 </div>
-<div class="body">
-  ${tag ? `<div class="badge">${tag}</div>` : ''}
-  <div class="hl">${hl}</div>
-  <div class="sub">${sub}</div>
-  <button class="cta">${cta}</button>
-</div></body></html>`;
+</body></html>`;
+    }
+  },
+
+  /* ──────────────────────────────────────────────
+     3. GRADE DE VALORES  (laranja_Qual_valor.html)
+     Status dot + domínio + grid 2×2 de valores
+  ────────────────────────────────────────────── */
+  {
+    id: 'value-grid',
+    name: 'Grade de Valores',
+    desc: 'Grid 2×2 com seleção de valor',
+    render: function (p) {
+      var w = p.width || 336, h = p.height || 280;
+      var s = Math.min(w / 336, h / 280);
+      var sr = function (px) { return Math.round(px * s); };
+
+      var pc         = p.primaryColor   || '#F97316';
+      var sc         = p.secondaryColor || '#FFF4E5';
+      var domain     = p.domain      || 'oguiadocredito.com';
+      var hl         = p.headline    || 'Qual valor você precisa liberar?';
+      var v1         = p.value1      || 'R$ 1.000';
+      var v2         = p.value2      || 'R$ 1.500';
+      var v3         = p.value3      || 'R$ 2.000';
+      var v4         = p.value4      || 'R$ 2.500';
+      var cta        = p.cta         || 'SIMULAR AGORA';
+      var disclaimer = p.disclaimer  || '*Sujeito à análise, verificação de dados e condições da instituição.';
+      var safeUrl    = (p.clickUrl || '#').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+
+      return `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:${w}px;height:${h}px;overflow:hidden;
+  font-family:Arial,sans-serif;background:#fff;
+  display:flex;flex-direction:column;align-items:center;}
+.topinfo{width:84%;display:flex;align-items:center;padding-top:${sr(8)}px;}
+.status-dot{width:${sr(10)}px;height:${sr(10)}px;background:#22c55e;
+  border-radius:50%;margin-right:${sr(6)}px;flex-shrink:0;}
+.domain{font-size:${sr(13)}px;color:#1a1a1a;font-weight:500;}
+.content-wrap{width:84%;display:flex;flex-direction:column;margin-top:${sr(14)}px;}
+h3{font-size:${sr(18)}px;font-weight:700;margin:0 0 ${sr(14)}px;color:#111827;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:${sr(10)}px;width:100%;}
+.card{background:${sc};color:${pc};border:1px solid ${pc}55;
+  border-radius:${sr(10)}px;padding:${sr(10)}px 0;font-weight:700;
+  font-size:${sr(15)}px;cursor:pointer;text-align:center;}
+.confirm{margin-top:${sr(16)}px;width:100%;background:${pc};color:#fff;
+  border:none;border-radius:${sr(8)}px;padding:${sr(12)}px 0;
+  font-weight:700;font-size:${sr(16)}px;cursor:pointer;}
+.footer{width:100%;font-size:${sr(11)}px;color:#6b7280;
+  margin-top:${sr(10)}px;line-height:1.3;}
+</style></head>
+<body data-href="${safeUrl}">
+<div class="topinfo">
+  <div class="status-dot"></div>
+  <div class="domain">${domain}</div>
+</div>
+<div class="content-wrap">
+  <h3>${hl}</h3>
+  <div class="grid">
+    <button class="card" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${v1}</button>
+    <button class="card" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${v2}</button>
+    <button class="card" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${v3}</button>
+    <button class="card" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${v4}</button>
+  </div>
+  <button class="confirm" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${cta}</button>
+  <div class="footer">${disclaimer}</div>
+</div>
+</body></html>`;
+    }
+  },
+
+  /* ──────────────────────────────────────────────
+     4. BOTÕES EMPILHADOS  (simule_agora_v2.html)
+     Centralizado, botões full-width com hover
+  ────────────────────────────────────────────── */
+  {
+    id: 'stacked-buttons',
+    name: 'Botões Empilhados',
+    desc: 'Valores em botões verticais centralizados',
+    render: function (p) {
+      var w = p.width || 336, h = p.height || 280;
+      var s = Math.min(w / 336, h / 280);
+      var sr = function (px) { return Math.round(px * s); };
+
+      var pc         = p.primaryColor  || '#2563eb';
+      var hl         = p.headline   || 'Simule os valores agora';
+      var v1         = p.value1     || 'R$ 1.000';
+      var v2         = p.value2     || 'R$ 1.500';
+      var v3         = p.value3     || 'R$ 2.000';
+      var v4         = p.value4     || 'R$ 2.500';
+      var disclaimer = p.disclaimer || '* Valor de referência sujeito a verificação de dados e condições da instituição. Exemplo ilustrativo.';
+      var safeUrl    = (p.clickUrl || '#').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+
+      return `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:${w}px;height:${h}px;overflow:hidden;
+  font-family:Arial,sans-serif;background:#fff;
+  display:flex;flex-direction:column;justify-content:center;
+  align-items:center;text-align:center;}
+h3{font-size:${sr(18)}px;font-weight:700;margin:${sr(12)}px 0;color:#111827;}
+.btn{display:block;width:80%;margin:${sr(6)}px auto;
+  background:${pc};color:#fff;border:none;border-radius:${sr(8)}px;
+  padding:${sr(10)}px 0;font-weight:700;cursor:pointer;
+  transition:all .3s ease;font-size:${sr(16)}px;text-transform:uppercase;}
+.btn:hover{transform:scale(1.05);box-shadow:0 0 ${sr(10)}px ${pc}55;}
+.footer{font-size:${sr(10)}px;color:#6b7280;margin-top:${sr(10)}px;
+  line-height:1.3;max-width:${sr(300)}px;padding:0 ${sr(10)}px;}
+</style></head>
+<body data-href="${safeUrl}">
+  <h3>${hl}</h3>
+  <button class="btn" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${v1}</button>
+  <button class="btn" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${v2}</button>
+  <button class="btn" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${v3}</button>
+  <button class="btn" onclick="var u=document.body.getAttribute('data-href');if(u&&u!='#')window.open(u,'_blank')">${v4}</button>
+  <div class="footer">${disclaimer}</div>
+</body></html>`;
     }
   }
 
