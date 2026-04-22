@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node --check \"c:/Users/terry/OneDrive/Área de Trabalho/AdsUp/conversor_de_criativos/app.js\")"
+      "Bash(node --check \"c:/Users/terry/OneDrive/Área de Trabalho/AdsUp/conversor_de_criativos/app.js\")",
+      "Bash(node --check \"c:/Users/terry/OneDrive/Área de Trabalho/AdsUp/conversor_de_criativos/generator.js\")",
+      "Bash(node --check \"c:/Users/terry/OneDrive/Área de Trabalho/AdsUp/conversor_de_criativos/templates.js\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
