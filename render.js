@@ -8,8 +8,8 @@ const OUTPUT_DIR = './creatives/output';
 
 const sizes = [
   { name: '336x280', width: 336, height: 280 },
-  //{ name: '300x250', width: 300, height: 250 },
-  //{ name: '320x100', width: 320, height: 100 }
+  { name: '300x250', width: 300, height: 250 },
+  { name: '320x100', width: 320, height: 100 }
 ];
 
 (async () => {
