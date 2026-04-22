@@ -3,30 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AdsUp — Conversor HTML → PNG</title>
+  <title>AdsUp AdForge — Ferramentas de Criativos</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- HEADER -->
+  <!-- ═══════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════ -->
   <header class="header">
     <div class="header-inner">
       <div class="brand">
         <span class="brand-name">AdsUp AdForge</span>
         <span class="brand-sep">·</span>
-        <span class="brand-tag">Conversor de Criativos</span>
+        <span class="brand-tag">Ferramentas de Criativos</span>
       </div>
+
+      <nav class="tab-nav" id="tabNav">
+        <button class="tab-btn active" data-tab="converter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+          </svg>
+          Conversor HTML
+        </button>
+        <button class="tab-btn" data-tab="generator">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+          </svg>
+          Gerador IA
+        </button>
+      </nav>
+
       <div class="header-badge">HTML → PNG</div>
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="main">
+  <!-- ═══════════════════════════════════════════
+       TAB: CONVERSOR
+  ═══════════════════════════════════════════ -->
+  <main id="app-converter" class="main">
 
-    <!-- PAINEL ESQUERDO: CONTROLES -->
+    <!-- Painel Esquerdo: Controles -->
     <aside class="panel panel-left">
 
-      <!-- Upload -->
       <div class="section">
         <div class="upload-zone" id="uploadZone">
           <div class="upload-inner">
@@ -41,7 +60,6 @@
         </div>
       </div>
 
-      <!-- Lista de arquivos -->
       <div class="section" id="filesSection" style="display:none">
         <div class="section-header">
           <span class="section-title">Arquivos carregados</span>
@@ -50,10 +68,8 @@
         <div class="files-list" id="filesList"></div>
       </div>
 
-      <!-- Configurações -->
       <div class="section">
         <div class="section-title">Configurações</div>
-
         <div class="field">
           <label class="label">Formato / Tamanho</label>
           <select class="select" id="sizeSelect">
@@ -79,7 +95,6 @@
             <option value="custom">Personalizado...</option>
           </select>
         </div>
-
         <div class="field" id="customSizeField" style="display:none">
           <label class="label">Dimensões personalizadas (px)</label>
           <div class="size-row">
@@ -88,7 +103,6 @@
             <input type="number" class="input input-sm" id="customHeight" placeholder="Altura" min="1" max="5000" value="280">
           </div>
         </div>
-
         <div class="field">
           <label class="label">Qualidade / Escala</label>
           <div class="btn-group" id="scaleGroup">
@@ -96,7 +110,6 @@
             <button class="btn-option" data-scale="2">2× Retina</button>
           </div>
         </div>
-
         <div class="field">
           <label class="label">Tempo de espera antes de capturar</label>
           <select class="select" id="waitSelect">
@@ -109,7 +122,6 @@
         </div>
       </div>
 
-      <!-- Botão converter -->
       <div class="section">
         <button class="btn-convert" id="convertBtn" disabled>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
@@ -122,15 +134,13 @@
 
     </aside>
 
-    <!-- PAINEL DIREITO: PREVIEW -->
+    <!-- Painel Direito: Preview -->
     <section class="panel panel-right">
       <div class="preview-bar">
         <span class="preview-label">Preview</span>
         <span class="preview-meta" id="previewMeta"></span>
       </div>
-
       <div class="preview-area" id="previewArea">
-        <!-- Estado vazio -->
         <div class="preview-empty" id="previewEmpty">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48">
             <rect x="3" y="3" width="18" height="18" rx="2.5"/>
@@ -139,22 +149,210 @@
           <p>Nenhum arquivo selecionado</p>
           <span>Faça upload de um HTML para visualizar aqui</span>
         </div>
-
-        <!-- Preview com iframe -->
         <div class="preview-frame-wrapper" id="previewWrapper" style="display:none">
-          <iframe
-            id="previewIframe"
-            class="preview-iframe"
+          <iframe id="previewIframe" class="preview-iframe"
             sandbox="allow-scripts allow-same-origin"
-            title="Preview do criativo"
-          ></iframe>
+            title="Preview do criativo"></iframe>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- OVERLAY: Progresso -->
+  <!-- ═══════════════════════════════════════════
+       TAB: GERADOR IA
+  ═══════════════════════════════════════════ -->
+  <main id="app-generator" class="main" style="display:none">
+
+    <!-- Painel Esquerdo: Gerador -->
+    <aside class="panel panel-left gen-panel-left">
+
+      <!-- Templates -->
+      <div class="section">
+        <span class="section-title">Template base</span>
+        <div class="template-grid" id="genTemplateGrid"></div>
+      </div>
+
+      <!-- Personalização -->
+      <div class="section">
+        <span class="section-title">Personalizar conteúdo</span>
+
+        <div class="field">
+          <label class="label">Headline</label>
+          <input type="text" class="input" id="genHeadline" placeholder="Título principal do anúncio" maxlength="80">
+        </div>
+        <div class="field">
+          <label class="label">Subtítulo / Descrição</label>
+          <textarea class="input" id="genSubtitle" rows="2" placeholder="Subtítulo ou benefício principal" maxlength="120" style="resize:vertical;min-height:52px"></textarea>
+        </div>
+        <div class="field field-half-row">
+          <div>
+            <label class="label">CTA</label>
+            <input type="text" class="input" id="genCta" placeholder="Saiba Mais" maxlength="30">
+          </div>
+          <div>
+            <label class="label">Badge / Tag</label>
+            <input type="text" class="input" id="genTag" placeholder="Promoção" maxlength="20">
+          </div>
+        </div>
+        <div class="field field-half-row">
+          <div>
+            <label class="label">Cor primária</label>
+            <input type="color" class="input-color" id="genPrimaryColor" value="#7c3aed">
+          </div>
+          <div>
+            <label class="label">Cor secundária</label>
+            <input type="color" class="input-color" id="genSecondaryColor" value="#10b981">
+          </div>
+        </div>
+      </div>
+
+      <!-- Tamanho + Escala -->
+      <div class="section">
+        <span class="section-title">Tamanho e qualidade</span>
+        <div class="field">
+          <select class="select" id="genSizeSelect">
+            <optgroup label="Display">
+              <option value="336x280">336 × 280 — Large Rectangle</option>
+              <option value="300x250">300 × 250 — Medium Rectangle</option>
+              <option value="300x600">300 × 600 — Half Page</option>
+            </optgroup>
+            <optgroup label="Horizontal">
+              <option value="728x90">728 × 90 — Leaderboard</option>
+              <option value="970x90">970 × 90 — Super Leaderboard</option>
+              <option value="970x250">970 × 250 — Billboard</option>
+            </optgroup>
+            <optgroup label="Mobile">
+              <option value="320x50">320 × 50 — Mobile Banner</option>
+              <option value="320x100">320 × 100 — Mobile Large</option>
+            </optgroup>
+            <optgroup label="Vertical">
+              <option value="160x600">160 × 600 — Wide Skyscraper</option>
+            </optgroup>
+            <option value="custom">Personalizado...</option>
+          </select>
+        </div>
+        <div class="field" id="genCustomSizeField" style="display:none">
+          <div class="size-row">
+            <input type="number" class="input input-sm" id="genCustomWidth" placeholder="Largura" min="1" max="5000" value="336">
+            <span class="size-x">×</span>
+            <input type="number" class="input input-sm" id="genCustomHeight" placeholder="Altura" min="1" max="5000" value="280">
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Escala de exportação</label>
+          <div class="btn-group" id="genScaleGroup">
+            <button class="btn-option" data-scale="1">1× Padrão</button>
+            <button class="btn-option active" data-scale="2">2× Retina</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assistente IA -->
+      <div class="section">
+        <div class="ai-section-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+          </svg>
+          Assistente IA (Claude)
+        </div>
+
+        <div class="field">
+          <label class="label">
+            Chave da API Anthropic
+            <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener" class="label-link">Obter chave →</a>
+          </label>
+          <input type="password" class="input" id="genApiKey" placeholder="sk-ant-api03-..." autocomplete="off">
+          <span class="field-hint">Salva localmente no seu navegador. Nunca enviada a servidores externos.</span>
+        </div>
+
+        <!-- AI Message -->
+        <div class="ai-msg" id="genAiMessage" style="display:none"></div>
+
+        <!-- Gerar Copy -->
+        <div class="ai-tool">
+          <p class="ai-tool-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+            </svg>
+            Gerar Copy com IA
+          </p>
+          <textarea class="input" id="genCopyContext" rows="3"
+            placeholder="Descreva seu produto/serviço, público-alvo e objetivo do anúncio..."
+            style="resize:vertical;min-height:64px"></textarea>
+          <button class="btn-ai" id="genBtnCopy">✦ Gerar headlines e CTAs</button>
+        </div>
+
+        <!-- Copy Results -->
+        <div class="copy-results" id="genCopyResults" style="display:none"></div>
+
+        <!-- Gerar Criativo Completo -->
+        <div class="ai-tool ai-tool-primary">
+          <p class="ai-tool-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/>
+            </svg>
+            Gerar Criativo Completo com IA
+          </p>
+          <p class="ai-tool-hint">IA gera um HTML/CSS original baseado no seu briefing</p>
+          <textarea class="input" id="genCreativeBrief" rows="4"
+            placeholder="Descreva o criativo: produto, estilo visual, tom de voz, referências visuais, elementos que devem aparecer..."
+            style="resize:vertical;min-height:80px"></textarea>
+          <button class="btn-ai btn-ai-primary" id="genBtnCreative">✦ Gerar criativo com IA</button>
+        </div>
+
+        <!-- AI HTML Panel (shown after generation) -->
+        <div class="ai-html-panel" id="genAiHTMLPanel" style="display:none">
+          <div class="ai-html-header">
+            <span class="ai-html-label">Criativo gerado pela IA</span>
+            <div class="ai-html-actions">
+              <button class="btn-ai-sm" id="genBtnEditHTML">✎ Editar HTML</button>
+            </div>
+          </div>
+          <textarea class="input ai-html-code" id="genAiHTMLCode" rows="8" spellcheck="false" style="display:none;resize:vertical;font-family:'SF Mono','Fira Mono',monospace;font-size:11px;"></textarea>
+          <button class="btn-ai btn-ai-apply" id="genBtnApplyHTML" style="display:none">↺ Aplicar edições ao preview</button>
+        </div>
+      </div>
+
+      <!-- Export -->
+      <div class="section">
+        <button class="btn-convert" id="genExportBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
+          </svg>
+          Exportar como PNG
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- Painel Direito: Preview do Gerador -->
+    <section class="panel panel-right">
+      <div class="preview-bar">
+        <span class="preview-label">Preview</span>
+        <span class="preview-meta" id="genPreviewMeta"></span>
+      </div>
+      <div class="preview-area" id="genPreviewArea">
+        <div class="preview-empty" id="genPreviewEmpty" style="display:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48">
+            <rect x="3" y="3" width="18" height="18" rx="2.5"/>
+            <path d="M3 9h18M9 21V9"/>
+          </svg>
+          <p>Escolha um template</p>
+        </div>
+        <div class="preview-frame-wrapper" id="genPreviewWrapper" style="display:none">
+          <iframe id="genPreviewIframe" class="preview-iframe"
+            sandbox="allow-scripts allow-same-origin"
+            title="Preview do criativo gerado"></iframe>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════
+       OVERLAY: Progresso (compartilhado)
+  ═══════════════════════════════════════════ -->
   <div class="overlay" id="progressOverlay" style="display:none" aria-live="polite">
     <div class="overlay-card">
       <div class="spinner"></div>
@@ -167,16 +365,16 @@
     </div>
   </div>
 
-  <!-- OVERLAY: Resultados -->
+  <!-- ═══════════════════════════════════════════
+       OVERLAY: Resultados (conversor)
+  ═══════════════════════════════════════════ -->
   <div class="overlay" id="resultsOverlay" style="display:none">
     <div class="results-card">
       <div class="results-header">
         <h2 class="results-title">Conversão concluída</h2>
         <button class="btn-icon-close" id="closeResultsBtn" aria-label="Fechar">✕</button>
       </div>
-
       <div class="results-grid" id="resultsGrid"></div>
-
       <div class="results-footer">
         <button class="btn-secondary" id="closeResultsBtn2">Fechar</button>
         <button class="btn-primary" id="downloadAllBtn" style="display:none">
@@ -189,9 +387,12 @@
     </div>
   </div>
 
+  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"
     integrity="sha512-XMVd28F1oH/O71fzwBnV7HucLxVwtxf26XV8P4wPk26EDxuGZ91N8bsOttmnomcCD3CS5ZMRL38H0a695Omag=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="templates.js"></script>
   <script src="app.js"></script>
+  <script src="generator.js"></script>
 </body>
 </html>

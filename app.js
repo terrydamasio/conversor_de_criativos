@@ -119,6 +119,7 @@ const dom = {
 // INIT
 // ============================================================
 function init() {
+  setupTabs();
   setupUpload();
   setupSettings();
 
@@ -130,6 +131,27 @@ function init() {
 
   window.addEventListener('resize', () => {
     if (state.selected) fitPreview();
+  });
+
+  // Init generator (defined in generator.js)
+  if (typeof genInit === 'function') genInit();
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function setupTabs() {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const tab = btn.dataset.tab;
+      const conv = document.getElementById('app-converter');
+      const gen  = document.getElementById('app-generator');
+      if (conv) conv.style.display = tab === 'converter' ? 'flex' : 'none';
+      if (gen)  gen.style.display  = tab === 'generator'  ? 'flex' : 'none';
+      if (tab === 'generator' && typeof fitGenPreview === 'function') fitGenPreview();
+    });
   });
 }
 
