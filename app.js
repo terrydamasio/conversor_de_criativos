@@ -80,7 +80,8 @@ const state = {
   results: [],
   format: 'png',
   gifFps: 10,
-  gifDuration: 2000
+  gifDuration: 2000,
+  assets: {}
 };
 
 // ============================================================
@@ -121,6 +122,7 @@ const dom = {
   gifSettings:       $('gifSettings'),
   gifFpsSelect:      $('gifFpsSelect'),
   gifDurationSelect: $('gifDurationSelect'),
+  assetsInfo:        $('assetsInfo'),
 };
 
 // ============================================================
@@ -183,22 +185,32 @@ function setupUpload() {
   dom.uploadZone.addEventListener('drop', e => {
     e.preventDefault();
     dom.uploadZone.classList.remove('drag-over');
-    addFiles(Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith('.html')));
+    addFiles(Array.from(e.dataTransfer.files));
   });
 }
 
-function addFiles(fileList) {
-  const incoming = Array.from(fileList).filter(f => f.name.toLowerCase().endsWith('.html'));
-  incoming.forEach(f => {
+async function addFiles(fileList) {
+  const incoming = Array.from(fileList);
+  const htmlFiles  = incoming.filter(f => f.name.toLowerCase().endsWith('.html'));
+  const imageFiles = incoming.filter(f => f.type && f.type.startsWith('image/'));
+
+  for (const f of imageFiles) {
+    state.assets[f.name] = await readAsDataURL(f);
+  }
+
+  htmlFiles.forEach(f => {
     if (!state.files.find(x => x.name === f.name && x.size === f.size)) {
       state.files.push(f);
     }
   });
+
   renderFilesList();
   if (!state.selected && state.files.length > 0) selectFile(state.files[0]);
   updateConvertButton();
-  dom.filesSection.style.display = state.files.length > 0 ? 'block' : 'none';
+  const hasContent = state.files.length > 0 || Object.keys(state.assets).length > 0;
+  dom.filesSection.style.display = hasContent ? 'block' : 'none';
   dom.fileInput.value = '';
+  updateAssetsInfo();
 }
 
 function renderFilesList() {
@@ -251,9 +263,11 @@ function removeFile(i) {
 function clearFiles() {
   state.files = [];
   state.selected = null;
+  state.assets = {};
   dom.filesSection.style.display = 'none';
   clearPreview();
   updateConvertButton();
+  updateAssetsInfo();
 }
 
 function updateConvertButton() {
@@ -325,7 +339,7 @@ function getSize() {
 let previewBlobURL = null;
 
 async function updatePreview(file) {
-  const html = await readAsText(file);
+  const html = inlineAssets(await readAsText(file));
   if (previewBlobURL) URL.revokeObjectURL(previewBlobURL);
   previewBlobURL = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
 
@@ -385,7 +399,7 @@ async function startConversion() {
     );
 
     try {
-      const html = await readAsText(file);
+      const html = inlineAssets(await readAsText(file));
 
       if (isGif) {
         const gifBlob = await htmlToGIF(html, width, height, {
@@ -634,6 +648,42 @@ function readAsText(file) {
     r.onerror = () => reject(new Error('Falha ao ler o arquivo ' + file.name));
     r.readAsText(file, 'utf-8');
   });
+}
+
+function readAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload  = e => resolve(e.target.result);
+    r.onerror = () => reject(new Error('Falha ao ler ' + file.name));
+    r.readAsDataURL(file);
+  });
+}
+
+function inlineAssets(html) {
+  if (!Object.keys(state.assets).length) return html;
+  return html
+    .replace(/\b(src)=(["'])((?!https?:|data:|\/\/)[^"']+)\2/gi, (match, attr, q, val) => {
+      const name = val.split('/').pop().split('?')[0];
+      const asset = state.assets[val] || state.assets[name];
+      return asset ? `${attr}=${q}${asset}${q}` : match;
+    })
+    .replace(/url\(\s*(["']?)((?!https?:|data:|\/\/)[^"')]+)\1\s*\)/gi, (match, q, val) => {
+      const name = val.split('/').pop().split('?')[0];
+      const asset = state.assets[val] || state.assets[name];
+      return asset ? `url(${q}${asset}${q})` : match;
+    });
+}
+
+function updateAssetsInfo() {
+  if (!dom.assetsInfo) return;
+  const count = Object.keys(state.assets).length;
+  if (count === 0) {
+    dom.assetsInfo.style.display = 'none';
+  } else {
+    const names = Object.keys(state.assets).join(', ');
+    dom.assetsInfo.textContent = `${count} imagem(ns) carregada(s): ${names}`;
+    dom.assetsInfo.style.display = 'block';
+  }
 }
 
 function delay(ms) {
