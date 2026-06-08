@@ -14,7 +14,8 @@ var GEN_H2C_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html
 // ============================================================
 var genState = {
   selectedTemplate: null,
-  aiHTML: null,        // HTML returned by AI creative generation
+  aiHTML: null,        // HTML returned by AI creative generation or uploaded
+  uploadedTemplateName: null,
   previewTimer: null,
   exportScale: 2
 };
@@ -34,7 +35,8 @@ function genInit() {
     'genPreviewIframe','genPreviewWrapper','genPreviewEmpty','genPreviewArea','genPreviewMeta',
     'genApiKey','genCopyContext','genBtnCopy','genCreativeBrief','genBtnCreative',
     'genAiMessage','genCopyResults','genExportPNG','genExportHTML','genExportGIF','genScaleGroup',
-    'genAiHTMLPanel','genAiHTMLCode','genBtnApplyHTML','genBtnEditHTML'
+    'genAiHTMLPanel','genAiHTMLCode','genBtnApplyHTML','genBtnEditHTML',
+    'genTemplateUpload','genUploadedBadge','genUploadedName','genClearUploaded'
   ];
   ids.forEach(function(id) { gd[id] = document.getElementById(id); });
 
@@ -42,6 +44,7 @@ function genInit() {
   bindFormListeners();
   bindAIListeners();
   bindExport();
+  bindTemplateUpload();
   loadApiKey();
 
   // Select first template
@@ -110,12 +113,14 @@ function buildTemplateGrid() {
 function selectTemplate(tpl) {
   genState.selectedTemplate = tpl;
   genState.aiHTML = null;
+  genState.uploadedTemplateName = null;
 
   document.querySelectorAll('.template-item').forEach(function(el) {
     el.classList.toggle('selected', el.dataset.id === tpl.id);
   });
 
   if (gd.genAiHTMLPanel) gd.genAiHTMLPanel.style.display = 'none';
+  if (gd.genUploadedBadge) gd.genUploadedBadge.style.display = 'none';
   schedulePreviewUpdate(0);
 }
 
@@ -435,6 +440,125 @@ function editAiHTML() {
   gd.genAiHTMLCode.style.display = visible ? 'none' : 'block';
   gd.genBtnEditHTML.textContent = visible ? '✎ Editar HTML' : '✎ Ocultar';
   gd.genBtnApplyHTML.style.display = visible ? 'none' : 'inline-flex';
+}
+
+// ============================================================
+// TEMPLATE UPLOAD
+// ============================================================
+function bindTemplateUpload() {
+  if (gd.genTemplateUpload) {
+    gd.genTemplateUpload.addEventListener('change', function() {
+      var file = gd.genTemplateUpload.files && gd.genTemplateUpload.files[0];
+      if (!file) return;
+      gd.genTemplateUpload.value = '';
+
+      if (!file.name.toLowerCase().endsWith('.html')) {
+        showAiMsg('Selecione um arquivo .html válido.', 'error');
+        return;
+      }
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var html = e.target.result;
+        if (!isValidTemplateHTML(html)) {
+          showAiMsg('Arquivo não parece ser um template HTML válido.', 'error');
+          return;
+        }
+        loadUploadedTemplate(html, file.name);
+      };
+      reader.onerror = function() { showAiMsg('Erro ao ler o arquivo.', 'error'); };
+      reader.readAsText(file, 'UTF-8');
+    });
+  }
+
+  if (gd.genClearUploaded) {
+    gd.genClearUploaded.addEventListener('click', clearUploadedTemplate);
+  }
+}
+
+function isValidTemplateHTML(html) {
+  var t = html.trim().toLowerCase();
+  return t.includes('<html') || t.includes('<!doctype') || t.includes('<body') || t.includes('<style');
+}
+
+function loadUploadedTemplate(html, filename) {
+  genState.aiHTML = html;
+  genState.uploadedTemplateName = filename;
+
+  // Deselect predefined templates
+  document.querySelectorAll('.template-item').forEach(function(el) {
+    el.classList.remove('selected');
+  });
+
+  // Show uploaded badge
+  if (gd.genUploadedBadge) gd.genUploadedBadge.style.display = 'flex';
+  if (gd.genUploadedName)  gd.genUploadedName.textContent = filename;
+
+  // Show AI HTML panel with code open and label updated
+  if (gd.genAiHTMLPanel) {
+    gd.genAiHTMLPanel.style.display = 'block';
+    var label = gd.genAiHTMLPanel.querySelector('.ai-html-label');
+    if (label) label.textContent = 'Template carregado';
+    if (gd.genAiHTMLCode) {
+      gd.genAiHTMLCode.value = html;
+      gd.genAiHTMLCode.style.display = 'block';
+    }
+    if (gd.genBtnEditHTML)  gd.genBtnEditHTML.textContent = '✎ Ocultar';
+    if (gd.genBtnApplyHTML) gd.genBtnApplyHTML.style.display = 'inline-flex';
+  }
+
+  // Auto-detect and apply dimensions from the HTML
+  var detected = detectHTMLDimensions(html);
+  if (detected && gd.genSizeSelect) {
+    var sizeKey = detected.width + 'x' + detected.height;
+    var matched = false;
+    for (var i = 0; i < gd.genSizeSelect.options.length; i++) {
+      if (gd.genSizeSelect.options[i].value === sizeKey) {
+        gd.genSizeSelect.value = sizeKey;
+        if (gd.genCustomSizeField) gd.genCustomSizeField.style.display = 'none';
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      gd.genSizeSelect.value = 'custom';
+      if (gd.genCustomSizeField) gd.genCustomSizeField.style.display = 'block';
+      if (gd.genCustomWidth)  gd.genCustomWidth.value  = detected.width;
+      if (gd.genCustomHeight) gd.genCustomHeight.value = detected.height;
+    }
+  }
+
+  schedulePreviewUpdate(0);
+  showAiMsg('Template carregado! Edite o HTML abaixo e clique em "Aplicar edições".', 'success');
+}
+
+function clearUploadedTemplate() {
+  genState.aiHTML = null;
+  genState.uploadedTemplateName = null;
+
+  if (gd.genUploadedBadge) gd.genUploadedBadge.style.display = 'none';
+
+  if (gd.genAiHTMLPanel) {
+    var label = gd.genAiHTMLPanel.querySelector('.ai-html-label');
+    if (label) label.textContent = 'Criativo gerado pela IA';
+    gd.genAiHTMLPanel.style.display = 'none';
+    if (gd.genAiHTMLCode) gd.genAiHTMLCode.style.display = 'none';
+    if (gd.genBtnApplyHTML) gd.genBtnApplyHTML.style.display = 'none';
+    if (gd.genBtnEditHTML)  gd.genBtnEditHTML.textContent = '✎ Editar HTML';
+  }
+
+  if (TEMPLATES && TEMPLATES.length > 0) selectTemplate(TEMPLATES[0]);
+}
+
+function detectHTMLDimensions(html) {
+  // Pattern: width: Xpx; ... height: Ypx (or swapped) inside body/html rule
+  var m = html.match(/(?:html\s*,\s*body|body)\s*\{[^}]*width\s*:\s*(\d+)px[^}]*height\s*:\s*(\d+)px/i);
+  if (m) return { width: parseInt(m[1], 10), height: parseInt(m[2], 10) };
+
+  m = html.match(/(?:html\s*,\s*body|body)\s*\{[^}]*height\s*:\s*(\d+)px[^}]*width\s*:\s*(\d+)px/i);
+  if (m) return { width: parseInt(m[2], 10), height: parseInt(m[1], 10) };
+
+  return null;
 }
 
 // ============================================================

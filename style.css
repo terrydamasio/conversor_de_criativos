@@ -946,6 +946,79 @@ html, body {
   padding: 0 8px 6px;
 }
 
+/* ── Template Upload ── */
+.template-upload-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.template-upload-sep {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.btn-upload-tpl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: none;
+  border: 1.5px dashed var(--border-light);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+
+.btn-upload-tpl:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(124,58,237,.06);
+}
+
+.uploaded-tpl-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(16,185,129,.08);
+  border: 1px solid rgba(16,185,129,.22);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: var(--success);
+}
+
+.uploaded-tpl-badge > span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.btn-clear-tpl {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0 2px;
+  transition: color var(--transition);
+}
+
+.btn-clear-tpl:hover {
+  color: var(--danger);
+}
+
 /* ── Form helpers ── */
 .field-half-row {
   display: grid;

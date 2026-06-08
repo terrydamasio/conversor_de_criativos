@@ -9,7 +9,10 @@
       "Bash(node --check app.js)",
       "Bash(node --check gif-export.js)",
       "Bash(node --check generator.js)",
-      "Bash(node --check templates.js)"
+      "Bash(node --check templates.js)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\terry\\\\OneDrive\\\\Área de Trabalho\\\\AdsUp\\\\conversor_de_criativos\" -Recurse)",
+      "Bash(Select-Object -Property FullName, PSIsContainer)",
+      "Bash(ConvertTo-Json -Depth 10)"
     ]
   }
 }
