@@ -36,7 +36,7 @@ function genInit() {
     'genApiKey','genCopyContext','genBtnCopy','genCreativeBrief','genBtnCreative',
     'genAiMessage','genCopyResults','genExportPNG','genExportHTML','genExportGIF','genScaleGroup',
     'genAiHTMLPanel','genAiHTMLCode','genBtnApplyHTML','genBtnEditHTML',
-    'genTemplateUpload','genUploadedBadge','genUploadedName','genClearUploaded'
+    'genBtnUploadTpl','genTemplateUpload','genUploadedBadge','genUploadedName','genClearUploaded'
   ];
   ids.forEach(function(id) { gd[id] = document.getElementById(id); });
 
@@ -446,6 +446,12 @@ function editAiHTML() {
 // TEMPLATE UPLOAD
 // ============================================================
 function bindTemplateUpload() {
+  if (gd.genBtnUploadTpl && gd.genTemplateUpload) {
+    gd.genBtnUploadTpl.addEventListener('click', function() {
+      gd.genTemplateUpload.click();
+    });
+  }
+
   if (gd.genTemplateUpload) {
     gd.genTemplateUpload.addEventListener('change', function() {
       var file = gd.genTemplateUpload.files && gd.genTemplateUpload.files[0];
